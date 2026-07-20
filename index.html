@@ -1,1210 +1,1191 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بيانات اتصال قططية</title>
+    <title>قطقوطة تاهت - معلومات المالك</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Firebase SDK -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDAaBVq8Cje-XYuNjxgJZkuKlGZlbCPwQI",
             authDomain: "lostcattest-1.firebaseapp.com",
             projectId: "lostcattest-1",
             storageBucket: "lostcattest-1.appspot.com",
-            messagingSenderId: "801235048233",
-            appId: "1:801235048233:web:39f8ced879ea0dd3e70938"
+            messagingSenderId: "736998981586",
+            appId: "1:736998981586:web:c1bfe3c4ac5c4e24ab01cb"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        // Make Firestore available globally
-        window.firestore = {
-            db,
-            doc,
-            getDoc,
-            setDoc
-        };
+
+        window.firestore = { db, doc, getDoc, setDoc };
     </script>
     <style>
         :root {
-            --primary: #6a11cb;
-            --secondary: #2575fc;
-            --accent: #ff6b6b;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --success: #20bf6b;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --cat-color: #ff9e7d;
-            --cat-paw: #fca5a5;
+            --bg: #e8e0f0;
+            --bg2: #ddd5ea;
+            --primary: #8b5cf6;
+            --primary-light: rgba(139,92,246,0.2);
+            --accent: #ef4444;
+            --success: #10b981;
+            --text-main: #3d2c1e;
+            --text-sub: #7a6652;
+            --shadow-dark: rgba(160,130,100,0.35);
+            --shadow-light: rgba(255,255,255,0.85);
+            --inset-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+            --raised-shadow: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
+            --raised-shadow-lg: 10px 10px 25px var(--shadow-dark), -10px -10px 25px var(--shadow-light);
+            --card-radius: 24px;
+            --input-radius: 14px;
+            --btn-radius: 50px;
         }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
-        }
-        
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            background: linear-gradient(135deg, #4a1c6f 0%, #1a4d8c 100%);
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             padding: 20px;
-            color: var(--dark);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            overflow-x: hidden;
+            color: var(--text-main);
+            transition: background 0.4s ease;
         }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .container {
+
+        /* ── Main Card ── */
+        .card {
+            background: var(--bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--raised-shadow-lg);
             width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            max-width: 460px;
             overflow: hidden;
-            transition: all 0.5s ease;
             position: relative;
-            z-index: 2;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        
-        .container::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        .header {
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 35px 25px;
+
+        /* ── Header ── */
+        .card-header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            padding: 32px 28px 60px;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        
-        .header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-            opacity: 0.2;
-        }
-        
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            position: relative;
-            z-index: 2;
-        }
-        
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 80%;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .content {
-            padding: 35px 30px;
-            position: relative;
-        }
-        
-        .form-container, .data-container {
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        
-        .form-container h2, .welcome-text {
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.8rem;
-            position: relative;
-            padding-bottom: 15px;
-        }
-        
-        .form-container h2::after, .welcome-text::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            right: 50%;
-            transform: translateX(50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 10px;
-        }
-        
-        /* استايل نموذج الإدخال */
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-        
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .input-group label {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #555;
-            padding-right: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .input-wrapper {
-            position: relative;
-        }
-        
-        .input-group input,
-        .input-group textarea {
-            padding: 16px 50px 16px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 15px;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
-            font-family: 'Tajawal', sans-serif;
-        }
-        
-        .input-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .input-group input:focus,
-        .input-group textarea:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(106, 17, 203, 0.15);
-        }
-        
-        .input-icon {
-            position: absolute;
-            top: 50%;
-            left: 18px;
-            transform: translateY(-50%);
-            color: #aaa;
-            font-size: 1.2rem;
-        }
-        
-        .input-group textarea + .input-icon {
-            top: 20px;
-            transform: none;
-        }
-        
-        .btn {
-            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 15px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 10px 20px rgba(106, 17, 203, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .btn::after {
+        .card-header::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -60%;
-            width: 40%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(25deg);
-            transition: all 0.6s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 25px rgba(106, 17, 203, 0.3);
-        }
-        
-        .btn:hover::after {
-            left: 120%;
-        }
-        
-        .btn i {
-            margin-left: 8px;
-        }
-        
-        /* استايل عرض البيانات */
-        .data-container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            text-align: center;
-        }
-        
-        .avatar {
-            width: 130px;
-            height: 130px;
+            top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            background: rgba(255,255,255,0.08);
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: -30px; left: -30px;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .pet-avatar {
+            width: 90px; height: 90px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 42px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border: 3px solid rgba(255,255,255,0.35);
+            position: relative; z-index: 1;
+            animation: petBounce 3s ease-in-out infinite;
+        }
+        @keyframes petBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .card-header h1 {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 800;
+            position: relative; z-index: 1;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .card-header p {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.9rem;
+            margin-top: 4px;
+            position: relative; z-index: 1;
+        }
+
+        /* wave divider */
+        .wave {
+            position: absolute;
+            bottom: -1px; left: 0; width: 100%;
+            height: 44px;
+        }
+        .wave path { fill: var(--bg); }
+
+        /* ── Body ── */
+        .card-body {
+            padding: 24px 28px 32px;
+        }
+
+        /* ── Section title ── */
+        .section-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--primary-light), transparent);
+            border-radius: 1px;
+        }
+
+        /* ── Info Cards (display mode) ── */
+        .info-grid {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            background: var(--bg);
+            border-radius: var(--input-radius);
+            box-shadow: var(--raised-shadow);
+            padding: 14px 18px;
+            display: flex;
             align-items: center;
-            margin-top: -75px;
-            border: 5px solid white;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            position: relative;
-            z-index: 3;
-            animation: pulse 2s infinite;
+            gap: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0px rgba(106, 17, 203, 0.5); }
-            100% { box-shadow: 0 0 0 20px rgba(106, 17, 203, 0); }
+        .info-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--raised-shadow-lg);
         }
-        
-        .avatar i {
-            font-size: 3.8rem;
-            color: white;
+
+        .info-icon {
+            width: 40px; height: 40px;
+            background: var(--bg);
+            border-radius: 10px;
+            box-shadow: var(--inset-shadow);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            color: var(--primary);
+            flex-shrink: 0;
         }
-        
-        .user-info {
-            width: 100%;
-        }
-        
-        .info-card {
-            background: white;
-            border-radius: 18px;
-            padding: 22px;
-            margin: 18px 0;
-            text-align: right;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-            border-right: 5px solid var(--primary);
-            transition: transform 0.4s, box-shadow 0.4s;
-            position: relative;
+
+        .info-text {
+            flex: 1;
             overflow: hidden;
         }
-        
-        .info-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        .info-label {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+            font-weight: 600;
+            margin-bottom: 2px;
         }
-        
-        .info-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .info-card h3 {
-            color: var(--primary);
-            margin-bottom: 12px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .info-card h3 i {
-            font-size: 1.2rem;
-        }
-        
-        .info-card p {
-            font-size: 1.6rem;
+        .info-value {
+            font-size: 0.97rem;
             font-weight: 700;
-            color: var(--dark);
-            direction: ltr;
+            color: var(--text-main);
+            word-break: break-all;
         }
-        
-        .notes-content {
-            font-size: 1.3rem;
-            color: #555;
-            line-height: 1.6;
-            text-align: right;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            margin-top: 10px;
-            border: 1px solid #eee;
-            white-space: pre-wrap;
-        }
-        
-        .welcome-text {
-            font-size: 2rem;
-            font-weight: 800;
+        .info-value a {
             color: var(--primary);
-            margin-top: 10px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-decoration: none;
+            font-size: 0.85rem;
         }
-        
-        .action-btn {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            padding: 14px 30px;
-            border-radius: 15px;
-            font-size: 1.1rem;
+        .info-value a:hover { text-decoration: underline; }
+
+        /* ── Form ── */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
             font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.1);
+            color: var(--text-sub);
+            margin-bottom: 8px;
         }
-        
-        .action-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.25);
-        }
-        
-        .footer {
-            text-align: center;
-            padding: 22px;
-            color: #777;
-            font-size: 0.95rem;
-            border-top: 1px solid #eee;
-            background: rgba(248, 249, 250, 0.8);
-        }
-        
-        .floating-element {
-            position: absolute;
-            z-index: 1;
-            opacity: 0.3;
-            animation: float 15s infinite linear;
-        }
-        
-        .circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, var(--accent), var(--cat-color));
-        }
-        
-        .triangle {
-            width: 0;
-            height: 0;
-            border-left: 50px solid transparent;
-            border-right: 50px solid transparent;
-            border-bottom: 87px solid var(--success);
-        }
-        
-        .cat-paw {
-            width: 80px;
-            height: 80px;
-            background: var(--cat-paw);
-            border-radius: 50%;
+        .input-wrap {
             position: relative;
-            animation: pulse 2s infinite;
-        }
-        
-        .cat-paw::before,
-        .cat-paw::after {
-            content: "";
-            position: absolute;
-            background: var(--cat-paw);
-            border-radius: 50%;
-        }
-        
-        .cat-paw::before {
-            width: 50px;
-            height: 50px;
-            top: -20px;
-            left: 15px;
-        }
-        
-        .cat-paw::after {
-            width: 50px;
-            height: 50px;
-            top: -20px;
-            right: 15px;
-        }
-        
-        .cat-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 30px;
-            height: 30px;
-            background: white;
-            border-radius: 50%;
-        }
-        
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(20px, 40px) rotate(90deg); }
-            50% { transform: translate(40px, 0) rotate(180deg); }
-            75% { transform: translate(20px, -40px) rotate(270deg); }
-            100% { transform: translate(0, 0) rotate(360deg); }
-        }
-        
-        .contact-instruction {
-            text-align: center;
-            margin-top: -15px;
-            margin-bottom: 25px;
-            color: #555;
-            font-size: 1.1rem;
-            padding: 0 20px;
-        }
-        
-        .storage-info {
-            background: #e8f4ff;
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 20px;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #2c6db3;
-            border: 1px solid #a9d0ff;
-        }
-        
-        .loading {
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
         }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(106, 17, 203, 0.2);
-            border-radius: 50%;
-            border-top: 4px solid var(--primary);
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* تصميم القطة التفاعلية */
-        .interactive-cat {
+        .input-icon {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 5;
-            cursor: pointer;
-            transition: all 0.4s;
-        }
-        
-        .cat-body {
-            width: 120px;
-            height: 80px;
-            background: linear-gradient(135deg, #ff9e7d 0%, #ff6b6b 100%);
-            border-radius: 60px 60px 40px 40px;
-            position: relative;
-            animation: catFloat 4s infinite ease-in-out;
-        }
-        
-        .cat-head {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #ff9e7d 0%, #ff6b6b 100%);
-            border-radius: 50%;
-            position: absolute;
-            top: -30px;
-            left: 20px;
-        }
-        
-        .cat-ear {
-            position: absolute;
-            width: 30px;
-            height: 40px;
-            background: #ff9e7d;
-            top: -15px;
-            border-radius: 50% 50% 0 0;
-        }
-        
-        .cat-ear.left {
-            left: 15px;
-            transform: rotate(-20deg);
-        }
-        
-        .cat-ear.right {
-            right: 15px;
-            transform: rotate(20deg);
-        }
-        
-        .cat-eye {
-            position: absolute;
-            width: 15px;
-            height: 20px;
-            background: #333;
-            border-radius: 50%;
-            top: 20px;
-        }
-        
-        .cat-eye.left {
-            left: 25px;
-        }
-        
-        .cat-eye.right {
-            right: 25px;
-        }
-        
-        .cat-nose {
-            position: absolute;
-            width: 10px;
-            height: 8px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            top: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .cat-mouth {
-            position: absolute;
-            width: 30px;
-            height: 15px;
-            border-bottom: 3px solid #333;
-            border-radius: 0 0 50% 50%;
-            top: 45px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .cat-tail {
-            position: absolute;
-            width: 60px;
-            height: 15px;
-            background: #ff9e7d;
-            border-radius: 10px;
-            right: -50px;
-            top: 20px;
-            transform-origin: left;
-            animation: tailMove 3s infinite ease-in-out;
-        }
-        
-        .cat-paw-btn {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: var(--cat-paw);
-            border-radius: 50%;
-            top: -20px;
-            right: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-            z-index: 10;
-        }
-        
-        .cat-paw-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        .cat-paw-btn i {
-            font-size: 24px;
-            color: #fff;
-        }
-        
-        .claw {
-            position: absolute;
-            width: 5px;
-            height: 15px;
-            background: #fff;
-            border-radius: 5px;
-            bottom: -10px;
-            transform-origin: top;
-            opacity: 0;
-        }
-        
-        .claw-1 { left: 10px; }
-        .claw-2 { left: 22px; }
-        .claw-3 { left: 35px; }
-        
-        .cat-paw-btn:hover .claw {
-            animation: clawOut 0.5s forwards;
-        }
-        
-        @keyframes clawOut {
-            0% { transform: scaleY(0); opacity: 0; }
-            100% { transform: scaleY(1); opacity: 1; }
-        }
-        
-        @keyframes catFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-        
-        @keyframes tailMove {
-            0%, 100% { transform: rotate(-10deg); }
-            50% { transform: rotate(10deg); }
-        }
-        
-        /* تصميم مخالب للأيقونات */
-        .icon-claw {
-            position: relative;
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-        }
-        
-        .icon-claw::before {
-            content: "";
-            position: absolute;
-            width: 8px;
-            height: 20px;
-            background: #ff6b6b;
-            border-radius: 4px;
-            top: 2px;
-            left: 4px;
-            transform: rotate(-20deg);
-        }
-        
-        .icon-claw::after {
-            content: "";
-            position: absolute;
-            width: 8px;
-            height: 20px;
-            background: #ff6b6b;
-            border-radius: 4px;
-            top: 2px;
-            right: 4px;
-            transform: rotate(20deg);
-        }
-        
-        .claw-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 12px;
-            color: #fff;
-            z-index: 2;
-        }
-        
-        /* أزرار على شكل كفوف */
-        .paw-button {
-            position: relative;
-            width: 60px;
-            height: 60px;
-            background: var(--cat-paw);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: all 0.3s;
-        }
-        
-        .paw-button:hover {
-            transform: scale(1.1);
-        }
-        
-        .paw-button i {
-            font-size: 24px;
-            color: #fff;
-        }
-        
-        .paw-button .claw {
-            position: absolute;
-            width: 6px;
-            height: 20px;
-            background: #fff;
-            border-radius: 5px;
-            bottom: -8px;
-            transform-origin: top;
-            opacity: 0;
-        }
-        
-        .paw-button:hover .claw {
-            animation: clawOut 0.5s forwards;
-        }
-        
-        .paw-button .claw-1 { left: 12px; }
-        .paw-button .claw-2 { left: 27px; }
-        .paw-button .claw-3 { left: 42px; }
-        
-        /* تعديلات للقطط */
-        .cat-elements {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            right: 16px;
+            color: var(--primary);
+            font-size: 15px;
             pointer-events: none;
             z-index: 1;
         }
-        
-        .cat-face-element {
-            position: absolute;
-            font-size: 40px;
-            opacity: 0.1;
-            animation: float 25s infinite linear;
+
+        input, textarea {
+            width: 100%;
+            background: var(--bg);
+            border: none;
+            outline: none;
+            border-radius: var(--input-radius);
+            padding: 14px 44px 14px 16px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            box-shadow: var(--inset-shadow);
+            transition: box-shadow 0.3s ease;
         }
-        
+        input:focus, textarea:focus {
+            box-shadow: var(--inset-shadow), 0 0 0 3px rgba(217,119,6,0.3);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+            padding-top: 14px;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0.6;
+            cursor: pointer;
+            filter: invert(0.4) sepia(1) saturate(3) hue-rotate(5deg);
+        }
+
+        /* location row */
+        .location-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .location-row input {
+            flex: 1;
+        }
+        .gps-btn {
+            flex-shrink: 0;
+            width: 50px; height: 50px;
+            background: var(--bg);
+            border: none;
+            border-radius: var(--input-radius);
+            box-shadow: var(--raised-shadow);
+            color: var(--primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .gps-btn:hover {
+            box-shadow: var(--inset-shadow);
+            transform: scale(0.97);
+        }
+        .gps-btn.loading i { animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Map Modal ── */
+        .map-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            backdrop-filter: blur(4px);
+            animation: fadeInOverlay 0.25s ease;
+        }
+        .map-modal-overlay.active { display: flex; }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .map-modal {
+            background: var(--bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--raised-shadow-lg);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+            animation: slideUpModal 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes slideUpModal {
+            from { transform: translateY(40px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .map-modal-header {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .map-modal-header h3 {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .map-modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 32px; height: 32px;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .map-modal-close:hover { background: rgba(255,255,255,0.35); }
+        .map-hint {
+            padding: 10px 16px;
+            background: rgba(217,119,6,0.1);
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            text-align: center;
+            border-bottom: 1px solid rgba(217,119,6,0.15);
+        }
+
+        /* ── Map Search Bar ── */
+        .map-search-wrap {
+            position: relative;
+            padding: 10px 12px 0;
+            background: var(--bg);
+        }
+        .map-search-inner {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            border-radius: var(--input-radius);
+            box-shadow: var(--inset-shadow);
+            padding: 0 12px;
+        }
+        .map-search-inner i {
+            color: var(--primary);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .map-search-input {
+            flex: 1;
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 12px 0 !important;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+        .map-search-input::placeholder { color: var(--text-sub); }
+        .map-search-clear {
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            display: none;
+            transition: color 0.2s;
+        }
+        .map-search-clear:hover { color: var(--accent); }
+        .map-search-clear.visible { display: block; }
+        .map-search-spinner {
+            display: none;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(217,119,6,0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+        .map-search-spinner.visible { display: block; }
+        /* Dropdown results */
+        .map-search-results {
+            position: absolute;
+            top: calc(100% - 2px);
+            left: 12px; right: 12px;
+            background: var(--bg);
+            border-radius: 0 0 var(--input-radius) var(--input-radius);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 9999;
+            display: none;
+        }
+        .map-search-results.open { display: block; }
+        .map-result-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 11px 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .map-result-item:last-child { border-bottom: none; }
+        .map-result-item:hover { background: rgba(217,119,6,0.08); }
+        .map-result-item i {
+            color: var(--primary);
+            font-size: 13px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+        .map-result-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+        .map-result-sub {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+        .map-search-no-results {
+            padding: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
+
+        #mapContainer {
+            width: 100%;
+            height: 290px;
+        }
+        .map-modal-footer {
+            padding: 14px 16px;
+            display: flex;
+            gap: 10px;
+        }
+        .map-confirm-btn {
+            flex: 1;
+            padding: 13px;
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(217,119,6,0.4);
+            transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .map-confirm-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(217,119,6,0.45); }
+        .map-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .map-cancel-btn {
+            padding: 13px 18px;
+            background: var(--bg);
+            color: var(--text-sub);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--raised-shadow);
+            transition: all 0.2s ease;
+        }
+        .map-cancel-btn:hover { box-shadow: var(--raised-shadow-lg); transform: translateY(-1px); }
+        .map-coords-display {
+            padding: 8px 16px;
+            background: var(--bg);
+            border-top: 1px solid rgba(0,0,0,0.06);
+            font-size: 0.78rem;
+            color: var(--text-sub);
+            text-align: center;
+            min-height: 32px;
+        }
+
+        /* ── Buttons ── */
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: #fff;
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(217,119,6,0.45);
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-top: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 28px rgba(217,119,6,0.45);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .btn-edit {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%;
+            padding: 13px;
+            background: var(--bg);
+            color: var(--primary);
+            border: none;
+            border-radius: var(--btn-radius);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--raised-shadow);
+            transition: all 0.3s ease;
+        }
+        .btn-edit:hover { box-shadow: var(--raised-shadow-lg); transform: translateY(-2px); }
+
+        /* ── Loading ── */
+        .loading-screen {
+            padding: 60px 28px;
+            text-align: center;
+            color: var(--text-sub);
+        }
+        .loader {
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            box-shadow: var(--inset-shadow);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .loader-inner {
+            width: 32px; height: 32px;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ── Footer ── */
+        .card-footer {
+            text-align: center;
+            padding: 0 28px 24px;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+        .card-footer span {
+            background: var(--bg);
+            border-radius: 50px;
+            box-shadow: var(--raised-shadow);
+            padding: 6px 16px;
+            display: inline-block;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            top: 20px; left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            background: #1e293b;
+            color: #fff;
+            padding: 13px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 9999;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            white-space: nowrap;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { background: #ef4444; }
+        .toast.success { background: #10b981; }
+
+        /* ── Shake animation ── */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .shake { animation: shake 0.4s ease; }
+
+        /* ── Responsive ── */
         @media (max-width: 480px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .header p {
-                font-size: 1rem;
-            }
-            
-            .content {
-                padding: 25px 20px;
-            }
-            
-            .avatar {
-                width: 110px;
-                height: 110px;
-                margin-top: -65px;
-            }
-            
-            .avatar i {
-                font-size: 3rem;
-            }
-            
-            .welcome-text {
-                font-size: 1.7rem;
-            }
-            
-            .info-card p {
-                font-size: 1.4rem;
-            }
-            
-            .interactive-cat {
-                transform: scale(0.8);
-                bottom: 10px;
-                right: 10px;
-            }
+            body { padding: 14px; align-items: flex-start; }
+            .card { max-width: 100%; border-radius: 20px; }
+            .card-header { padding: 24px 20px 52px; }
+            .card-body { padding: 20px 20px 24px; }
         }
     </style>
 </head>
 <body>
-    <!-- عناصر عائمة للخلفية -->
-    <div class="cat-elements">
-        <div class="cat-face-element" style="top: 10%; left: 5%; animation-duration: 30s;">😺</div>
-        <div class="cat-face-element" style="top: 20%; left: 80%; animation-duration: 25s; animation-delay: -5s;">😸</div>
-        <div class="cat-face-element" style="top: 70%; left: 15%; animation-duration: 35s; animation-delay: -10s;">😻</div>
-        <div class="cat-face-element" style="top: 85%; left: 75%; animation-duration: 40s; animation-delay: -15s;">🐾</div>
-    </div>
-    
-    <div class="floating-element circle" style="top: 10%; left: 5%; animation-duration: 20s;"></div>
-    <div class="floating-element cat-paw" style="top: 70%; left: 80%; animation-duration: 25s; animation-delay: -5s;"></div>
-    <div class="floating-element circle" style="top: 40%; left: 85%; width: 70px; height: 70px; animation-duration: 18s; animation-delay: -3s;"></div>
-    
-    <!-- القطة التفاعلية -->
-    <div class="interactive-cat">
-        <div class="cat-body">
-            <div class="cat-head">
-                <div class="cat-ear left"></div>
-                <div class="cat-ear right"></div>
-                <div class="cat-eye left"></div>
-                <div class="cat-eye right"></div>
-                <div class="cat-nose"></div>
-                <div class="cat-mouth"></div>
+
+    <div class="card" id="mainCard">
+
+        <!-- HEADER -->
+        <div class="card-header">
+            <div class="pet-avatar">🐈</div>
+            <h1 id="headerTitle">قطقوطة تاهت</h1>
+            <p>رجّعني بيتي انا تايه</p>
+            <svg class="wave" viewBox="0 0 500 44" preserveAspectRatio="none">
+                <path d="M0,44 C120,10 250,44 370,20 C430,9 470,30 500,44 Z"/>
+            </svg>
+        </div>
+
+        <!-- CARD BODY -->
+        <div class="card-body">
+
+            <!-- Loading state -->
+            <div id="loadingScreen" class="loading-screen">
+                <div class="loader"><div class="loader-inner"></div></div>
+                <p>جاري تحميل البيانات...</p>
             </div>
-            <div class="cat-tail"></div>
-        </div>
-        <div class="cat-paw-btn" id="refreshBtn">
-            <i class="fas fa-redo"></i>
-            <div class="claw claw-1"></div>
-            <div class="claw claw-2"></div>
-            <div class="claw claw-3"></div>
-        </div>
-    </div>
-    
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-paw"></i> قطقوطة ضايعة <i class="fas fa-paw"></i></h1>
-            <p> رجّعني لبيتي عشان انا توهت </p>
-        </div>
-        
-        <div class="content">
-            <!-- نموذج الإدخال للزيارة الأولى -->
-            <div class="form-container" id="formContainer">
-                <h2>بيانات التواصل </h2>
-                <div class="input-group">
-                    <label for="name">
-                        <div class="icon-claw">
-                            <i class="fas fa-user claw-icon"></i>
+
+            <!-- ── DATA DISPLAY ── -->
+            <div id="dataView" style="display:none">
+                <p class="section-title"><i class="fas fa-id-card"></i> معلومات المالك</p>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-user"></i></div>
+                        <div class="info-text">
+                            <div class="info-label">الاسم</div>
+                            <div class="info-value" id="displayName">—</div>
                         </div>
-                        اسمك:
-                    </label>
-                    <div class="input-wrapper">
-                        <input type="text" id="name" placeholder="أدخل اسمك هنا" required>
-                        <div class="input-icon"><i class="fas fa-signature"></i></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-phone"></i></div>
+                        <div class="info-text">
+                            <div class="info-label">رقم الهاتف</div>
+                            <div class="info-value" id="displayPhone">—</div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="input-group">
-                    <label for="phone">
-                        <div class="icon-claw">
-                            <i class="fas fa-mobile-alt claw-icon"></i>
+
+                <!-- Pet Info Section -->
+                <p class="section-title" style="margin-top:18px"><i class="fas fa-cat"></i> معلومات القطة</p>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-tag"></i></div>
+                        <div class="info-text">
+                            <div class="info-label">اسم القطة</div>
+                            <div class="info-value" id="displayPetName">—</div>
                         </div>
-                        رقم هاتفك:
-                    </label>
-                    <div class="input-wrapper">
-                        <input type="tel" id="phone" placeholder="أدخل رقم هاتفك" required>
-                        <div class="input-icon"><i class="fas fa-phone"></i></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-birthday-cake"></i></div>
+                        <div class="info-text">
+                            <div class="info-label" id="labelBirthdate">تاريخ الميلاد</div>
+                            <div class="info-value" id="displayPetBirthdate">—</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="info-text">
+                            <div class="info-label" id="labelLocation">موقع بيتها</div>
+                            <div class="info-value" id="displayPetLastSeen">—</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-notes-medical"></i></div>
+                        <div class="info-text">
+                            <div class="info-label" id="labelHealth">ملاحظات صحية</div>
+                            <div class="info-value" id="displayPetHealthNotes">—</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon"><i class="fas fa-syringe"></i></div>
+                        <div class="info-text">
+                            <div class="info-label" id="labelVaccine">موعد التطعيم القادم</div>
+                            <div class="info-value" id="displayPetVaccineDate">—</div>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- خانة الملاحظات الجديدة -->
-                <div class="input-group">
-                    <label for="notes">
-                        <div class="icon-claw">
-                            <i class="fas fa-sticky-note claw-icon"></i>
-                        </div>
-                        معلومات إضافية:
-                    </label>
-                    <div class="input-wrapper">
-                        <textarea id="notes" placeholder="اكتب أي معلومات حابب تحفظها لحيوانك عشان متنسهاش"></textarea>
-                        <div class="input-icon"><i class="fas fa-pen"></i></div>
-                    </div>
-                </div>
-                
-                <button class="btn" id="saveBtn">
-                    <i class="fas fa-paw"></i> حفظ البيانات
+
+                <button class="btn-edit" id="editBtn">
+                    <i class="fas fa-pen"></i> تعديل البيانات
                 </button>
-                
-                <div class="storage-info">
-                    سيتم حفظ بياناتك لتظهر عند زيارتك القادمة للموقع
-                </div>
             </div>
-            
-            <!-- عرض البيانات للزيارات التالية -->
-            <div class="data-container" id="dataContainer">
-                <div class="avatar">
-                    <i class="fas fa-cat"></i>
-                </div>
-                
-                <h2 class="welcome-text">بيانات الاتصال</h2>
-                
-                <div class="user-info">
-                    <div class="info-card">
-                        <h3><i class="fas fa-user-tag"></i> اسمي:</h3>
-                        <p id="displayName">محمد أحمد</p>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h3><i class="fas fa-phone-alt"></i> رقم هاتفي:</h3>
-                        <p id="displayPhone">+966 50 123 4567</p>
-                    </div>
-                    
-                    <!-- خانة الملاحظات الجديدة في العرض -->
-                    <div class="info-card" id="notesCard" style="display: none;">
-                        <h3><i class="fas fa-sticky-note"></i> معلومات إضافية:</h3>
-                        <div class="notes-content" id="displayNotes"></div>
+
+            <!-- ── FORM ── -->
+            <div id="formView" style="display:none">
+                <p class="section-title"><i class="fas fa-pen-to-square"></i> بيانات المالك</p>
+
+                <div class="form-group">
+                    <label class="form-label">الاسم الكامل *</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fas fa-user"></i>
+                        <input type="text" id="name" placeholder="ادخل اسمك الكامل">
                     </div>
                 </div>
-                
-                <div class="paw-button" id="editBtn">
-                    <i class="fas fa-edit"></i>
-                    <div class="claw claw-1"></div>
-                    <div class="claw claw-2"></div>
-                    <div class="claw claw-3"></div>
+
+                <div class="form-group">
+                    <label class="form-label">رقم الهاتف *</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fas fa-phone"></i>
+                        <input type="tel" id="phone" placeholder="ادخل رقم هاتفك">
+                    </div>
                 </div>
+
+                <p class="section-title" style="margin-top:8px"><i class="fas fa-cat"></i> معلومات القطة</p>
+
+                <div class="form-group">
+                    <label class="form-label">اسم القطة *</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fas fa-tag"></i>
+                        <input type="text" id="petName" placeholder="ادخل اسم القطة">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="formLabelBirthdate">تاريخ ميلاد القطة *</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fas fa-calendar-alt"></i>
+                        <input type="date" id="petBirthdate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="formLabelLocation">موقع بيتها *</label>
+                    <div class="location-row">
+                        <div class="input-wrap" style="flex:1">
+                            <i class="input-icon fas fa-map-pin"></i>
+                            <input type="text" id="petLastSeen" placeholder="اكتب المكان او اضغط GPS أو الخريطة">
+                        </div>
+                        <button class="gps-btn" id="gpsBtnPet" title="احصل على الموقع الحالي">
+                            <i class="fas fa-location-crosshairs"></i>
+                        </button>
+                        <button class="gps-btn" id="mapPickerBtnPet" title="اختر من الخريطة" style="color: #10b981;">
+                            <i class="fas fa-map"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="formLabelHealth">ملاحظات صحية (اختياري)</label>
+                    <textarea id="petHealthNotes" placeholder="مثال: لا تعاني من أي امراض، تطعيم القطة..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" id="formLabelVaccine">موعد التطعيم القادم</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fas fa-calendar-plus"></i>
+                        <input type="date" id="petVaccineDate">
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="saveBtn">
+                    <i class="fas fa-floppy-disk"></i> حفظ البيانات
+                </button>
             </div>
-            
-            <!-- حالة التحميل -->
-            <div class="loading" id="loading" style="display: none;">
-                <div class="spinner"></div>
-                <span style="margin-right: 10px;">جاري تحميل البيانات...</span>
-            </div>
+
         </div>
-        
-        <div class="footer">
-            <i class="fas fa-paw"></i> Designed By PickyPets <i class="fas fa-paw"></i>
+
+        <!-- FOOTER -->
+        <div class="card-footer">
+            <span><i class="fas fa-paw"></i> Designed by PickyPets <i class="fas fa-paw"></i></span>
         </div>
     </div>
-    
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Map Modal -->
+    <div class="map-modal-overlay" id="mapModalOverlay">
+        <div class="map-modal">
+            <div class="map-modal-header">
+                <h3><i class="fas fa-map-location-dot"></i> اختر موقعك على الخريطة</h3>
+                <button class="map-modal-close" id="mapModalClose"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="map-hint">📍 ابحث عن مكان أو اضغط على الخريطة مباشرةً</div>
+            <!-- Search Bar -->
+            <div class="map-search-wrap">
+                <div class="map-search-inner">
+                    <i class="fas fa-search"></i>
+                    <input class="map-search-input" id="mapSearchInput" type="text" placeholder="ابحث عن مكان... (مثال: القاهرة، الرياض)" autocomplete="off">
+                    <div class="map-search-spinner" id="mapSearchSpinner"></div>
+                    <button class="map-search-clear" id="mapSearchClear"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="map-search-results" id="mapSearchResults"></div>
+            </div>
+            <div id="mapContainer"></div>
+            <div class="map-coords-display" id="mapCoordsDisplay">لم يتم تحديد موقع بعد</div>
+            <div class="map-modal-footer">
+                <button class="map-confirm-btn" id="mapConfirmBtn" disabled>
+                    <i class="fas fa-check"></i> تأكيد الموقع
+                </button>
+                <button class="map-cancel-btn" id="mapCancelBtn">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Wait for Firebase to initialize
-            while (!window.firestore) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-            }
-            
-            const { db, doc, getDoc, setDoc } = window.firestore;
-            
-            const formContainer = document.getElementById('formContainer');
-            const dataContainer = document.getElementById('dataContainer');
-            const loading = document.getElementById('loading');
-            const displayName = document.getElementById('displayName');
-            const displayPhone = document.getElementById('displayPhone');
-            const displayNotes = document.getElementById('displayNotes');
-            const notesCard = document.getElementById('notesCard');
-            const nameInput = document.getElementById('name');
-            const phoneInput = document.getElementById('phone');
-            const notesInput = document.getElementById('notes');
-            const saveBtn = document.getElementById('saveBtn');
-            const refreshBtn = document.getElementById('refreshBtn');
-            const editBtn = document.getElementById('editBtn');
-            
-            // Reference to Firestore document
-            const docRef = doc(db, "catOwners", "userCat37");
-            
-            // Show loading state
-            formContainer.style.display = 'none';
-            dataContainer.style.display = 'none';
-            loading.style.display = 'flex';
-            
-            try {
-                // Try to get data from Firestore
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists()) {
-                    // Data exists - show data container
-                    const data = docSnap.data();
-                    displayName.textContent = data.name || 'غير متوفر';
-                    displayPhone.textContent = data.phone || 'غير متوفر';
-                    
-                    // Show notes if they exist
-                    if (data.notes && data.notes.trim() !== '') {
-                        displayNotes.textContent = data.notes;
-                        notesCard.style.display = 'block';
-                    } else {
-                        notesCard.style.display = 'none';
-                    }
-                    
-                    dataContainer.style.display = 'flex';
-                } else {
-                    // No data - show form
-                    formContainer.style.display = 'flex';
-                }
-            } catch (error) {
-                // Error handling
-                console.error("حدث خطأ في جلب البيانات:", error);
-                
-                // Show error message
-                const errorMsg = document.createElement('div');
-                errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> فشل في تحميل البيانات، الرجاء المحاولة لاحقًا';
-                errorMsg.style.cssText = `
-                    background: var(--accent);
-                    color: white;
-                    padding: 15px;
-                    border-radius: 10px;
-                    text-align: center;
-                    margin: 20px;
-                    font-weight: bold;
-                `;
-                document.querySelector('.content').appendChild(errorMsg);
-                
-                // Show form as fallback
-                formContainer.style.display = 'flex';
-            } finally {
-                // Hide loading state
-                loading.style.display = 'none';
-            }
-            
-            // Save button event listener
-            saveBtn.addEventListener('click', async function() {
-                const name = nameInput.value;
-                const phone = phoneInput.value;
-                const notes = notesInput.value;
-                
-                if (!name || !phone) {
-                    // Show error animation
-                    const inputs = document.querySelectorAll('input');
-                    inputs.forEach(input => {
-                        if (!input.value) {
-                            input.style.borderColor = 'var(--accent)';
-                            input.style.animation = 'shake 0.5s';
-                            
-                            setTimeout(() => {
-                                input.style.animation = '';
-                            }, 500);
-                        }
-                    });
-                    
-                    // Create alert message
-                    const alertMsg = document.createElement('div');
-                    alertMsg.innerHTML = '<i class="fas fa-exclamation-circle"></i> الرجاء إدخال جميع البيانات المطلوبة';
-                    alertMsg.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: var(--accent);
-                        color: white;
-                        padding: 15px 25px;
-                        border-radius: 10px;
-                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                        z-index: 1000;
-                        animation: slideIn 0.5s, fadeOut 0.5s 2.5s;
-                    `;
-                    
-                    document.body.appendChild(alertMsg);
-                    
-                    setTimeout(() => {
-                        alertMsg.remove();
-                    }, 3000);
-                    return;
-                }
-                
-                try {
-                    // Show saving state
-                    const originalBtnText = saveBtn.innerHTML;
-                    saveBtn.innerHTML = '<i class="fas fa-paw fa-spin"></i> جاري الحفظ...';
-                    saveBtn.disabled = true;
-                    
-                    // Save to Firestore including notes
-                    await setDoc(docRef, {
-                        name: name,
-                        phone: phone,
-                        notes: notes,
-                        timestamp: new Date()
-                    });
-                    
-                    // Show success animation
-                    saveBtn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ!';
-                    saveBtn.style.background = 'linear-gradient(90deg, var(--success), #01c896)';
-                    
-                    setTimeout(() => {
-                        // Reset button
-                        saveBtn.innerHTML = originalBtnText;
-                        saveBtn.style.background = 'linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%)';
-                        saveBtn.disabled = false;
-                        
-                        // Show data container
-                        formContainer.style.display = 'none';
-                        dataContainer.style.display = 'flex';
-                        displayName.textContent = name;
-                        displayPhone.textContent = phone;
-                        
-                        // Display notes if they exist
-                        if (notes && notes.trim() !== '') {
-                            displayNotes.textContent = notes;
-                            notesCard.style.display = 'block';
-                        } else {
-                            notesCard.style.display = 'none';
-                        }
-                    }, 1500);
-                } catch (error) {
-                    console.error("حدث خطأ في حفظ البيانات:", error);
-                    
-                    // Show error message
-                    const alertMsg = document.createElement('div');
-                    alertMsg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> فشل في حفظ البيانات، الرجاء المحاولة لاحقًا';
-                    alertMsg.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        background: var(--accent);
-                        color: white;
-                        padding: 15px 25px;
-                        border-radius: 10px;
-                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                        z-index: 1000;
-                    `;
-                    
-                    document.body.appendChild(alertMsg);
-                    
-                    setTimeout(() => {
-                        alertMsg.remove();
-                    }, 3000);
-                    
-                    // Reset button
-                    saveBtn.innerHTML = originalBtnText;
-                    saveBtn.disabled = false;
-                }
-            });
-            
-            // Refresh button event listener
-            refreshBtn.addEventListener('click', function() {
-                location.reload();
-            });
-            
-            // Edit button event listener
-            editBtn.addEventListener('click', function() {
-                dataContainer.style.display = 'none';
-                formContainer.style.display = 'flex';
-                nameInput.value = displayName.textContent;
-                phoneInput.value = displayPhone.textContent;
-                notesInput.value = displayNotes.textContent;
-            });
-            
-            // Add animation styles
-            const style = document.createElement('style');
-            style.innerHTML = `
-                @keyframes shake {
-                    0%, 100% { transform: translateX(0); }
-                    20%, 60% { transform: translateX(-10px); }
-                    40%, 80% { transform: translateX(10px); }
-                }
-                
-                @keyframes slideIn {
-                    from { transform: translateX(100px); opacity: 0; }
-                    to { transform: translateX(0); opacity: 1; }
-                }
-                
-                @keyframes fadeOut {
-                    from { opacity: 1; transform: translateY(0); }
-                    to { opacity: 0; transform: translateY(-20px); }
-                }
-                
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(-20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-            `;
-            document.head.appendChild(style);
+    document.addEventListener('DOMContentLoaded', async function() {
+
+        // ── Helpers ──
+        function showToast(msg, type = 'info') {
+            const t = document.getElementById('toast');
+            t.innerHTML = '<i class="fas ' + (type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle') + '"></i> ' + msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(() => { t.className = 'toast'; }, 3200);
+        }
+
+        // ── GPS Button (Pet home location) ──
+        const gpsBtnPet = document.getElementById('gpsBtnPet');
+        const petLastSeenInput = document.getElementById('petLastSeen');
+
+        gpsBtnPet.addEventListener('click', function() {
+            if (!navigator.geolocation) { showToast('المتصفح لا يدعم تحديد الموقع', 'error'); return; }
+            gpsBtnPet.classList.add('loading');
+            gpsBtnPet.querySelector('i').className = 'fas fa-spinner';
+            gpsBtnPet.disabled = true;
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    const lat = pos.coords.latitude.toFixed(6);
+                    const lng = pos.coords.longitude.toFixed(6);
+                    petLastSeenInput.value = 'https://maps.google.com/?q=' + lat + ',' + lng;
+                    gpsBtnPet.classList.remove('loading');
+                    gpsBtnPet.querySelector('i').className = 'fas fa-check';
+                    gpsBtnPet.style.color = 'var(--success)';
+                    gpsBtnPet.disabled = false;
+                    showToast('تم تحديد الموقع بنجاح!', 'success');
+                    setTimeout(() => { gpsBtnPet.querySelector('i').className = 'fas fa-location-crosshairs'; gpsBtnPet.style.color = ''; }, 2500);
+                },
+                function(err) {
+                    gpsBtnPet.classList.remove('loading');
+                    gpsBtnPet.querySelector('i').className = 'fas fa-location-crosshairs';
+                    gpsBtnPet.disabled = false;
+                    let msg = 'تعذر تحديد الموقع';
+                    if (err.code === 1) msg = 'يرجى السماح بالوصول للموقع';
+                    else if (err.code === 2) msg = 'الموقع غير متاح حالياً';
+                    else if (err.code === 3) msg = 'انتهت مهلة تحديد الموقع';
+                    showToast(msg, 'error');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         });
+
+        // ── Map Picker ──
+        let leafletMap = null;
+        let mapMarker = null;
+        let pickedLat = null;
+        let pickedLng = null;
+
+        const mapModalOverlay  = document.getElementById('mapModalOverlay');
+        const mapModalClose    = document.getElementById('mapModalClose');
+        const mapCancelBtn     = document.getElementById('mapCancelBtn');
+        const mapConfirmBtn    = document.getElementById('mapConfirmBtn');
+        const mapCoordsDisplay = document.getElementById('mapCoordsDisplay');
+        const mapSearchInput   = document.getElementById('mapSearchInput');
+        const mapSearchResults = document.getElementById('mapSearchResults');
+        const mapSearchSpinner = document.getElementById('mapSearchSpinner');
+        const mapSearchClear   = document.getElementById('mapSearchClear');
+
+        // Custom marker icon
+        const pinIcon = L.divIcon({
+            className: '',
+            html: '<div style="width:32px;height:32px;background:linear-gradient(135deg,#d97706,#b45309);border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 12px rgba(0,0,0,0.3)"></div>',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32]
+        });
+
+        function placeMarker(latlng) {
+            pickedLat = parseFloat(latlng.lat).toFixed(6);
+            pickedLng = parseFloat(latlng.lng).toFixed(6);
+            if (mapMarker) {
+                mapMarker.setLatLng([pickedLat, pickedLng]);
+            } else {
+                mapMarker = L.marker([pickedLat, pickedLng], { icon: pinIcon }).addTo(leafletMap);
+            }
+            mapCoordsDisplay.innerHTML = '<i class="fas fa-location-dot" style="color:var(--primary)"></i> ' + pickedLat + ', ' + pickedLng;
+            mapConfirmBtn.disabled = false;
+        }
+
+        function openMapModal() {
+            mapModalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (!leafletMap) {
+                leafletMap = L.map('mapContainer', { zoomControl: true }).setView([26.8206, 30.8025], 6);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    maxZoom: 19
+                }).addTo(leafletMap);
+                leafletMap.on('click', function(e) {
+                    placeMarker(e.latlng);
+                    closeSearchResults();
+                });
+            } else {
+                setTimeout(() => leafletMap.invalidateSize(), 100);
+            }
+            // Center on existing pet location if set
+            const existing = petLastSeenInput.value.trim();
+            const match = existing.match(/q=([-\d.]+),([-\d.]+)/);
+            if (match && leafletMap) {
+                leafletMap.setView([parseFloat(match[1]), parseFloat(match[2])], 15);
+            }
+            setTimeout(() => leafletMap && leafletMap.invalidateSize(), 300);
+        }
+
+        function closeMapModal() {
+            mapModalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            closeSearchResults();
+        }
+
+        // ── Search functionality ──
+        let searchTimeout = null;
+
+        function closeSearchResults() {
+            mapSearchResults.classList.remove('open');
+            mapSearchResults.innerHTML = '';
+        }
+
+        mapSearchInput.addEventListener('input', function() {
+            const q = this.value.trim();
+            mapSearchClear.classList.toggle('visible', q.length > 0);
+            clearTimeout(searchTimeout);
+            if (q.length < 2) { closeSearchResults(); return; }
+            searchTimeout = setTimeout(() => searchPlaces(q), 500);
+        });
+
+        mapSearchClear.addEventListener('click', function() {
+            mapSearchInput.value = '';
+            mapSearchClear.classList.remove('visible');
+            closeSearchResults();
+            mapSearchInput.focus();
+        });
+
+        mapSearchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); searchPlaces(this.value.trim()); }
+        });
+
+        async function searchPlaces(query) {
+            if (!query) return;
+            mapSearchSpinner.classList.add('visible');
+            mapSearchClear.classList.remove('visible');
+            try {
+                const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' +
+                            encodeURIComponent(query) + '&limit=50&addressdetails=1&accept-language=ar';
+                const res = await fetch(url, { headers: { 'Accept-Language': 'ar' } });
+                const data = await res.json();
+                renderSearchResults(data);
+            } catch(err) {
+                mapSearchResults.innerHTML = '<div class="map-search-no-results">⚠️ تعذر الاتصال، تحقق من الإنترنت</div>';
+                mapSearchResults.classList.add('open');
+            } finally {
+                mapSearchSpinner.classList.remove('visible');
+                mapSearchClear.classList.toggle('visible', mapSearchInput.value.trim().length > 0);
+            }
+        }
+
+        function renderSearchResults(places) {
+            if (!places || places.length === 0) {
+                mapSearchResults.innerHTML = '<div class="map-search-no-results">🔍 لم يتم العثور على نتائج</div>';
+                mapSearchResults.classList.add('open');
+                return;
+            }
+            mapSearchResults.innerHTML = '';
+            places.forEach(place => {
+                const parts = place.display_name.split(',');
+                const name = parts[0].trim();
+                const sub  = parts.slice(1, 3).join(',').trim();
+                const item = document.createElement('div');
+                item.className = 'map-result-item';
+                item.innerHTML = '<div class="map-result-name">' + name + '</div>' +
+                    (sub ? '<div class="map-result-sub">' + sub + '</div>' : '') + '</div>';
+                item.addEventListener('click', function() {
+                    const lat = parseFloat(place.lat);
+                    const lng = parseFloat(place.lon);
+                    leafletMap.setView([lat, lng], 15);
+                    placeMarker({ lat, lng });
+                    mapSearchInput.value = name;
+                    mapSearchClear.classList.add('visible');
+                    closeSearchResults();
+                });
+                mapSearchResults.appendChild(item);
+            });
+            mapSearchResults.classList.add('open');
+        }
+
+        // Close results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.map-search-wrap')) closeSearchResults();
+        });
+
+        document.getElementById('mapPickerBtnPet').addEventListener('click', openMapModal);
+        mapModalClose.addEventListener('click', closeMapModal);
+        mapCancelBtn.addEventListener('click', closeMapModal);
+        mapModalOverlay.addEventListener('click', function(e) {
+            if (e.target === mapModalOverlay) closeMapModal();
+        });
+
+        mapConfirmBtn.addEventListener('click', function() {
+            if (pickedLat !== null && pickedLng !== null) {
+                petLastSeenInput.value = 'https://maps.google.com/?q=' + pickedLat + ',' + pickedLng;
+                closeMapModal();
+                showToast('تم تحديد الموقع من الخريطة!', 'success');
+                pickedLat = null;
+                pickedLng = null;
+                mapCoordsDisplay.textContent = 'لم يتم تحديد موقع بعد';
+                mapConfirmBtn.disabled = true;
+                if (mapMarker) { mapMarker.remove(); mapMarker = null; }
+                mapSearchInput.value = '';
+                mapSearchClear.classList.remove('visible');
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMapModal();
+        });
+
+        // ── Firebase ──
+        while (!window.firestore) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        const { db, doc, getDoc, setDoc } = window.firestore;
+        const docRef = doc(db, "catOwners", "userCat37");
+
+        const loadingScreen = document.getElementById('loadingScreen');
+        const dataView = document.getElementById('dataView');
+        const formView = document.getElementById('formView');
+
+        const displayName     = document.getElementById('displayName');
+        const displayPhone    = document.getElementById('displayPhone');
+        const displayPetName  = document.getElementById('displayPetName');
+        const displayPetBirthdate   = document.getElementById('displayPetBirthdate');
+        const displayPetLastSeen    = document.getElementById('displayPetLastSeen');
+        const displayPetHealthNotes = document.getElementById('displayPetHealthNotes');
+        const displayPetVaccineDate = document.getElementById('displayPetVaccineDate');
+
+        const nameInput           = document.getElementById('name');
+        const phoneInput          = document.getElementById('phone');
+        const petNameInput        = document.getElementById('petName');
+        const petBirthdateInput   = document.getElementById('petBirthdate');
+        const petHealthNotesInput = document.getElementById('petHealthNotes');
+        const petVaccineDateInput = document.getElementById('petVaccineDate');
+
+        function formatLocation(el, val) {
+            if (!val) { el.textContent = 'غير متوفر'; return; }
+            if (val.startsWith('http')) {
+                el.innerHTML = '<a href="' + val + '" target="_blank"><i class="fas fa-map-marker-alt"></i> عرض على الخريطة</a>';
+            } else {
+                el.textContent = val;
+            }
+        }
+
+        function populateDisplay(data) {
+            displayName.textContent  = data.name  || 'غير متوفر';
+            displayPhone.textContent = data.phone || 'غير متوفر';
+            displayPetName.textContent        = data.petName        || 'غير متوفر';
+            displayPetBirthdate.textContent   = data.petBirthdate   || 'غير متوفر';
+            displayPetHealthNotes.textContent = data.petHealthNotes || 'لا توجد ملاحظات';
+            displayPetVaccineDate.textContent = data.petVaccineDate || 'غير متوفر';
+            formatLocation(displayPetLastSeen, data.petLastSeen);
+            // Dynamic header
+            const headerTitle = document.getElementById('headerTitle');
+
+        const petNameInputForLive = document.getElementById('petName');
+        if (petNameInputForLive) {
+            petNameInputForLive.addEventListener('input', function() {
+                const pName = this.value.trim() || 'القطة';
+                document.getElementById('formLabelBirthdate').textContent = 'تاريخ ميلاد ' + pName + ' *';
+                document.getElementById('formLabelLocation').textContent = 'موقع بيت ' + pName + ' *';
+                document.getElementById('formLabelHealth').textContent = 'ملاحظات صحية لـ ' + pName + ' (اختياري)';
+                document.getElementById('formLabelVaccine').textContent = 'موعد التطعيم القادم لـ ' + pName;
+            });
+        }
+    
+            if (headerTitle && data.petName) headerTitle.textContent = data.petName + ' تاهت';
+        }
+
+        try {
+            const docSnap = await getDoc(docRef);
+            loadingScreen.style.display = 'none';
+            if (docSnap.exists()) {
+                populateDisplay(docSnap.data());
+                dataView.style.display = 'block';
+            } else {
+                formView.style.display = 'block';
+            }
+        } catch (e) {
+            loadingScreen.style.display = 'none';
+            formView.style.display = 'block';
+            showToast('تعذر تحميل البيانات', 'error');
+        }
+
+        // ── Save ──
+        document.getElementById('saveBtn').addEventListener('click', async function() {
+            const name     = nameInput.value.trim();
+            const phone    = phoneInput.value.trim();
+            const petName  = petNameInput.value.trim();
+            const petBirthdate   = petBirthdateInput.value;
+            const petLastSeen    = petLastSeenInput.value.trim();
+            const petHealthNotes = petHealthNotesInput.value.trim();
+            const petVaccineDate = petVaccineDateInput.value;
+
+            let hasError = false;
+            [nameInput, phoneInput, petNameInput].forEach(inp => {
+                if (!inp.value.trim()) {
+                    inp.classList.add('shake');
+                    inp.style.boxShadow = 'var(--inset-shadow), 0 0 0 3px rgba(239,68,68,0.35)';
+                    setTimeout(() => { inp.classList.remove('shake'); inp.style.boxShadow = ''; }, 600);
+                    hasError = true;
+                }
+            });
+            if (hasError) { showToast('يرجى تعبئة جميع الحقول المطلوبة', 'error'); return; }
+
+            const btn = this;
+            const origHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+            btn.disabled = true;
+
+            try {
+                await setDoc(docRef, { name, phone, petName, petBirthdate, petLastSeen, petHealthNotes: petHealthNotes || 'لا توجد ملاحظات', petVaccineDate, timestamp: new Date() });
+                btn.innerHTML = '<i class="fas fa-check"></i> تم الحفظ!';
+                showToast('تم حفظ البيانات بنجاح!', 'success');
+                setTimeout(() => {
+                    btn.innerHTML = origHtml;
+                    btn.disabled = false;
+                    populateDisplay({ name, phone, petName, petBirthdate, petLastSeen, petHealthNotes, petVaccineDate });
+                    formView.style.display = 'none';
+                    dataView.style.display = 'block';
+                }, 1500);
+            } catch (e) {
+                showToast('فشل الحفظ، حاول مرة اخرى', 'error');
+                btn.innerHTML = origHtml;
+                btn.disabled = false;
+            }
+        });
+
+        // ── Edit ──
+        document.getElementById('editBtn').addEventListener('click', function() {
+            nameInput.value         = displayName.textContent === 'غير متوفر' ? '' : displayName.textContent;
+            phoneInput.value        = displayPhone.textContent === 'غير متوفر' ? '' : displayPhone.textContent;
+            petNameInput.value      = displayPetName.textContent === 'غير متوفر' ? '' : displayPetName.textContent;
+            petBirthdateInput.value = displayPetBirthdate.textContent === 'غير متوفر' ? '' : displayPetBirthdate.textContent;
+            petLastSeenInput.value  = displayPetLastSeen.querySelector('a') ? displayPetLastSeen.querySelector('a').href : (displayPetLastSeen.textContent === 'غير متوفر' ? '' : displayPetLastSeen.textContent);
+            petHealthNotesInput.value = displayPetHealthNotes.textContent === 'لا توجد ملاحظات' ? '' : displayPetHealthNotes.textContent;
+            petVaccineDateInput.value = displayPetVaccineDate.textContent === 'غير متوفر' ? '' : displayPetVaccineDate.textContent;
+            dataView.style.display  = 'none';
+            formView.style.display  = 'block';
+        });
+
+    });
     </script>
+
 </body>
 </html>
